@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: app
+  namespace: lxc
+spec:
+  selector:
+    app: app
+  ports:
+    - port: 80
+      name: web
+      targetPort: wdport
+  type: ClusterIP
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+  namespace: lxc
+  labels:
+    app: app
+spec:
+  selector:
+    matchLabels:
+      app: app
+  replicas: 1
+  template:
+    metadata:
+      name: app
+      labels:
+        app: app
+        tier: frontend
+    spec:
+      containers:
+        - name: app
+          image: liaoxcool/tiger_app:1.0
+          ports:
+            - containerPort: 8000
+              name: wdport
+
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
